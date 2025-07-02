@@ -6,6 +6,7 @@ import {
   getHotelsServices,
   updateHotelServices
 } from "../hotels/hotel.service";
+import { createHotelValidator ,updateHotelValidator} from "../validation/hotel.validator";
 
 // GET all hotels
 export const getHotels = async (req: Request, res: Response) => {
@@ -43,7 +44,8 @@ export const getHotelById = async (req: Request, res: Response) => {
 
 // POST create hotel
 export const createHotel = async (req: Request, res: Response) => {
-  const { name, location, address, contactPhone, category, rating } = req.body;
+  const validatedData = createHotelValidator.parse(req.body);
+  const { name, location, address, contactPhone, category, rating } = validatedData;
 
   if (!name || !location || !address || !contactPhone || !category || rating === undefined) {
     res.status(400).json({ error: "All fields are required" });
@@ -90,6 +92,10 @@ export const updateHotel = async (req: Request, res: Response) => {
   }
 
   try {
+    //vlalidate data
+     const validatedData = updateHotelValidator.parse({ ...req.body, hotelId });
+
+    const { name, location, address, contactPhone, category, rating } = validatedData;
     const result = await updateHotelServices(hotelId, {
       name,
       location,

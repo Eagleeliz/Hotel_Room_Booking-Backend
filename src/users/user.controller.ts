@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createUserServices, deleteUserServices, getUserByIdServices, getUsersServices, updateUserServices } from "./user.service";
+import { createUserValidator,userLogInValidator,updateUserValidator } from "../validation/user.validator";
 
 //get users
 export const getUsers = async (req: Request, res: Response) => {

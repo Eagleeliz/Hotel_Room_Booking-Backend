@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createUserValidator = z.object({
-    firstName: z.string().min(1).max(100).trim(),
+    firstName: z.string().min(4).max(100).trim(),
     lastName: z.string().min(1).max(100).trim(),
     email: z.string().email().trim(),
     password: z.string().min(4).max(100).trim(),

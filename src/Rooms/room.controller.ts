@@ -6,7 +6,8 @@ import {
   createRoomServices,
   updateRoomServices,
   deleteRoomServices,
-  getRoomsByHotelIdService
+  getRoomsByHotelIdService,
+  getAvailableRoomsService
 } from "../Rooms/room.service";
 
 // GET all rooms
@@ -63,6 +64,20 @@ export const getRoomsByHotelId = async (req: Request, res: Response) => {
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to fetch rooms" });
+  }
+};
+
+//get available rooms
+export const getAvailableRooms = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const rooms = await getAvailableRoomsService();
+    if (rooms && rooms.length > 0) {
+      res.status(200).json(rooms);
+    } else {
+      res.status(404).json({ message: "No available rooms found" });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 };
 

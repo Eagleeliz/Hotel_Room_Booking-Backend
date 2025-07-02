@@ -5,6 +5,9 @@ import { THotelInsert, THotelSelect, hotelTable } from "../drizzle/schema";
 //get all hotels
 export const getHotelsServices = async (): Promise<THotelSelect[] | null> => {
   return await db.query.hotelTable.findMany({
+    with:{
+     rooms:true
+    },
     orderBy: [desc(hotelTable.hotelId)],
   });
 };
@@ -12,6 +15,9 @@ export const getHotelsServices = async (): Promise<THotelSelect[] | null> => {
 // Get hotel by ID
 export const getHotelByIdServices = async ( hotelId: number): Promise<THotelSelect | undefined> => {
   return await db.query.hotelTable.findFirst({
+     with:{
+     rooms:true
+    },
     where: eq(hotelTable.hotelId, hotelId),
   });
 };

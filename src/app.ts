@@ -5,6 +5,7 @@ import { authRouter } from './auth/auth.route';
 import cors from "cors"
 import { hotelRouter } from './hotels/hotel.route';
 import roomRouter from './Rooms/room.route';
+import bookingRouter from './booking/booking.route';
 
 dotenv.config();
 
@@ -22,11 +23,12 @@ app.get('/', (req, res:Response) => {
 });
 
 //import route
-
+app.use('/api',bookingRouter);
 app.use('/api',userRouter);
 app.use('/api', authRouter);
 app.use('/api',hotelRouter);
 app.use('/api',roomRouter);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });

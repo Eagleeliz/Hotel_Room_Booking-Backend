@@ -6,21 +6,49 @@ import { TRoomInsert, TRoomSelect, roomTable } from "../drizzle/schema";
 // Get all rooms
 export const getRoomsServices = async (): Promise<TRoomSelect[] | null> => {
   return await db.query.roomTable.findMany({
-    orderBy: [desc(roomTable.roomId)],
+    with:{
+      hotel:true
+    },
+       orderBy: [desc(roomTable.roomId)],
   });
 };
+  // orderBy: [desc(roomTable.roomId)],
 
 // Get room by ID
 export const getRoomByIdServices = async ( roomId: number): Promise<TRoomSelect | undefined> => {
   return await db.query.roomTable.findFirst({
     where: eq(roomTable.roomId, roomId),
+      with:{
+      hotel:true
+    },
   });
 };
 //getRoomForaHotel
 export const getRoomsByHotelIdService = async (hotelId: number): Promise<TRoomSelect[]> => {
   return await db.query.roomTable.findMany({
     where: eq(roomTable.hotelId, hotelId),
+      with:{
+      hotel:true
+    },
     orderBy: [desc(roomTable.roomId)]
+  });
+};
+
+//get available rooms
+export const getAvailableRoomsService = async (): Promise<TRoomSelect[] | null> => {
+  return await db.query.roomTable.findMany({
+    where: eq(roomTable.isAvailable, true),
+    with: {
+      hotel: {
+        columns: {
+          name: true,
+          location: true,
+          address: true,
+          category: true,
+          rating: true
+        }
+      }
+    }
   });
 };
 
