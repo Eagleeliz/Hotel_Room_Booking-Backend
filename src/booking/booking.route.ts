@@ -19,26 +19,27 @@ import {
   getUpcomingCheckIns,
   getUpcomingCheckOuts
 } from "../booking/booking.controller";
+import { adminOnly, anyAuthenticatedUser } from "../middleware/bearAuth";
 
 export const BookingRouter = Router();
 
-BookingRouter.get("/booking", getAllBookings);
-BookingRouter.post("/booking", createNewBooking);
-BookingRouter.get("/booking/search/date-range", getBookingsByDateRange);
+BookingRouter.get("/booking",adminOnly, getAllBookings);
+BookingRouter.post("/booking",anyAuthenticatedUser,createNewBooking);
+BookingRouter.get("/booking/search/date-range",adminOnly, getBookingsByDateRange);
 BookingRouter.get("/booking/:id", getBookingById);
-BookingRouter.put("/booking/:id", updateBooking);
+BookingRouter.put("/booking/:id", anyAuthenticatedUser,updateBooking);
 BookingRouter.delete("/booking/:id", deleteBooking);
 
-BookingRouter.patch("/booking/:id/status", updateBookingStatus);
-BookingRouter.patch("/booking/:id/cancel", cancelBooking);
-BookingRouter.patch("/booking/:id/confirm", confirmBooking);
+BookingRouter.patch("/booking/:id/status", adminOnly,updateBookingStatus);
+BookingRouter.patch("/booking/:id/cancel", adminOnly,cancelBooking);
+BookingRouter.patch("/booking/:id/confirm",adminOnly, confirmBooking);
 
-BookingRouter.get("/booking/user/:userId", getBookingsByUserId);
-BookingRouter.get("/booking/room/:roomId", getBookingsByRoomId);
-BookingRouter.get("/booking/status/:status", getBookingsByStatus);
+BookingRouter.get("/booking/user/:userId", adminOnly,getBookingsByUserId);
+BookingRouter.get("/booking/room/:roomId", adminOnly,getBookingsByRoomId);
+BookingRouter.get("/booking/status/:status",adminOnly, getBookingsByStatus);
 
 
-BookingRouter.get("/booking/room/:roomId/availability", checkRoomAvailability);
+BookingRouter.get("/booking/room/:roomId/availability", anyAuthenticatedUser,checkRoomAvailability);
 
 BookingRouter.get("/booking/:id/details", getBookingWithCompleteDetails);
 BookingRouter.get("/booking/user/:userId/history", getUserBookingHistory);

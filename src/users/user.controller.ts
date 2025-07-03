@@ -9,7 +9,10 @@ export const getUsers = async (req: Request, res: Response) => {
         if (allUsers == null || allUsers.length == 0) {
           res.status(404).json({ message: "No users found" });
         }else{
-            res.status(200).json(allUsers);             
+     // Remove password from each user object before sending response
+            const usersWithoutPasswords = allUsers.map(({ password, ...user }) => user);
+            res.status(200).json(usersWithoutPasswords);
+                       
         }            
     } catch (error:any) {
         res.status(500).json({ error:error.message || "Failed to fetch users" });
@@ -22,13 +25,15 @@ export const getUserById = async (req: Request, res: Response) => {
     if (isNaN(userId)) {
         res.status(400).json({ error: "Invalid user ID" });
          return; // Prevent further execution
-    }
+    } 
     try {
         const user = await getUserByIdServices(userId);
         if (user == undefined) {
             res.status(404).json({ message: "User not found" });
         } else {
-            res.status(200).json(user);
+           // Remove password from each user object before sending response
+          const { password, ...userWithoutPassword } = user;
+            res.status(200).json(userWithoutPassword);
         }
     } catch (error:any) {
         res.status(500).json({ error:error.message || "Failed to fetch user" });

@@ -181,7 +181,6 @@ export const checkRoomAvailability = async (req: Request, res: Response): Promis
 // Create new booking
 export const createNewBooking = async (req: Request, res: Response): Promise<void> => {
   const bookingData = req.body;
-  // Removed 'numberOfGuests' as per your schema
   const requiredFields = ['userId', 'roomId', 'checkInDate', 'checkOutDate'];
   const missing = requiredFields.filter(f => !bookingData[f]);
 
@@ -190,10 +189,9 @@ export const createNewBooking = async (req: Request, res: Response): Promise<voi
     return;
   }
 
-  // Ensure userId, roomId are numbers. Removed numberOfGuests validation.
   if (isNaN(parseInt(bookingData.userId)) || isNaN(parseInt(bookingData.roomId))) {
-      res.status(400).json({ error: "userId and roomId must be valid numbers." });
-      return;
+    res.status(400).json({ error: "userId and roomId must be valid numbers." });
+    return;
   }
 
   if (new Date(bookingData.checkInDate) >= new Date(bookingData.checkOutDate)) {
@@ -207,12 +205,17 @@ export const createNewBooking = async (req: Request, res: Response): Promise<voi
   }
 
   try {
-    const message = await createNewBookingService(bookingData);
-    res.status(201).json({ message });
+    const booking = await createNewBookingService(bookingData);
+
+    res.status(201).json({
+      message: "Booking created successfully 🎉",
+      booking
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to create booking" });
   }
 };
+
 
 // Update booking
 export const updateBooking = async (req: Request, res: Response): Promise<void> => {

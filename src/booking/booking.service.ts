@@ -146,8 +146,8 @@ export const getHotelBookingsStatsService = async (hotelId: number): Promise<TRo
   });
 };
 
-export const createNewBookingService = async (data: TBookingInsert): Promise<string> => {
-  const isAvailable = await checkRoomAvailabilityService(data.roomId!, data.checkInDate!, data.checkOutDate!);
+export const createNewBookingService = async (data: any) => {
+  const isAvailable = await checkRoomAvailabilityService(data.roomId, data.checkInDate, data.checkOutDate);
   if (!isAvailable) throw new Error("Room is not available for the selected dates");
 
   const room = await db.query.roomTable.findFirst({
@@ -157,19 +157,41 @@ export const createNewBookingService = async (data: TBookingInsert): Promise<str
   if (!room) throw new Error("Room not found");
 
   const nights = Math.ceil(
-    (new Date(data.checkOutDate!).getTime() - new Date(data.checkInDate!).getTime()) / (1000 * 60 * 60 * 24)
+    (new Date(data.checkOutDate!).getTime() - new Date(data.checkInDate!).getTime()) /
+      (1000 * 60 * 60 * 24)
   );
 
   const totalAmount = (parseFloat(room.pricePerNight as string) * nights).toFixed(2);
 
-  await db.insert(bookingTable).values({
-    ...data,
-    totalAmount,
-    bookingStatus: "Pending"
+  // Insert booking and get the inserted bookingId
+  const [inserted] = await db
+    .insert(bookingTable)
+    .values({
+      ...data,
+      totalAmount,
+      bookingStatus: "Pending"
+    })
+    .returning({ bookingId: bookingTable.bookingId });
+
+  // Query the full booking with relations
+  const fullBooking = await db.query.bookingTable.findFirst({
+    where: eq(bookingTable.bookingId, inserted.bookingId),
+    with: {
+      user: true,
+      room: {
+        with: {
+          hotel: true
+        }
+      },
+      payment: true
+    }
   });
 
-  return "Booking created successfully 🎉";
+  if (!fullBooking) throw new Error("Failed to retrieve created booking");
+
+  return fullBooking;
 };
+
 
 export const checkRoomAvailabilityService = async (
   roomId: number,

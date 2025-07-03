@@ -25,6 +25,7 @@ export const getUserByEmailService = async(email: string): Promise<TUserSelect |
         where: eq(userTable.email, email)
     });
     return user;
+    
 }
 
 //updateUserPassword

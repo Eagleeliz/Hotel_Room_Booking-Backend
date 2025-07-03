@@ -7,7 +7,8 @@ import { TRoomInsert, TRoomSelect, roomTable } from "../drizzle/schema";
 export const getRoomsServices = async (): Promise<TRoomSelect[] | null> => {
   return await db.query.roomTable.findMany({
     with:{
-      hotel:true
+      hotel:true,
+      bookings:true
     },
        orderBy: [desc(roomTable.roomId)],
   });
@@ -19,7 +20,8 @@ export const getRoomByIdServices = async ( roomId: number): Promise<TRoomSelect 
   return await db.query.roomTable.findFirst({
     where: eq(roomTable.roomId, roomId),
       with:{
-      hotel:true
+      hotel:true,
+      bookings:true
     },
   });
 };

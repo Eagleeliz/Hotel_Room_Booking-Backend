@@ -6,6 +6,7 @@ import cors from "cors"
 import { hotelRouter } from './hotels/hotel.route';
 import roomRouter from './Rooms/room.route';
 import bookingRouter from './booking/booking.route';
+import supportTicketRouter from './SupportTickets/supportTicket.route';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use('/api',userRouter);
 app.use('/api', authRouter);
 app.use('/api',hotelRouter);
 app.use('/api',roomRouter);
+app.use('/api',supportTicketRouter);
 
 // 404 handler
 app.use((req, res) => {
