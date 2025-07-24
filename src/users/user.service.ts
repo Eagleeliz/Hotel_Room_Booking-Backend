@@ -3,14 +3,24 @@ import db from "../drizzle/db";
 import { TUserInsert, TUserSelect, userTable } from "../drizzle/schema";
 
 //Get all Users
-export const getUsersServices = async():Promise<TUserSelect[] | null> => {
-     return await  db.query.userTable.findMany({
-      with:{
-        bookings:true
-      },
-       orderBy:[desc(userTable.userId)]
-     });
-}
+// Define a new return type: user + bookingCount
+type TUserWithBookingCount = TUserSelect & { bookingCount: number };
+
+export const getUsersServices = async (): Promise<TUserWithBookingCount[] | null> => {
+  const users = await db.query.userTable.findMany({
+    with: {
+      bookings: true,
+    },
+    orderBy: [desc(userTable.userId)],
+  });
+
+  // Add bookingCount to each user
+  return users.map((user) => ({
+    ...user,
+    bookingCount: user.bookings.length,
+  }));
+};
+
 
 //Get user by Id
 export const getUserByIdServices = async(userId: number):Promise<TUserSelect | undefined>=> {

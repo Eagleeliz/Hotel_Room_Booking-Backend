@@ -18,8 +18,32 @@ import {
   getUserBookingHistoryService,
   getHotelBookingsStatsService,
   getUpcomingCheckInsService,
-  getUpcomingCheckOutsService
+  getUpcomingCheckOutsService,
+  updateBookingStatusToConfirmedService
 } from '../booking/booking.service'; // Adjust path as per your project structure
+
+export const updateBookingStatusToConfirmedController = async (req: Request, res: Response) => {
+  try {
+    const bookingId = parseInt(req.params.bookingId, 10);
+
+    if (isNaN(bookingId)) {
+      res.status(400).json({ error: "Invalid booking ID" }); return
+    }
+
+    const updatedBooking = await updateBookingStatusToConfirmedService(bookingId);
+
+    if (!updatedBooking) {
+      res.status(404).json({ message: "Booking not found" });  return
+    }
+
+    res.status(200).json({ message: "Booking status updated to Confirmed", booking: updatedBooking });
+  } catch (error) {
+    console.error("Error updating booking status:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 
 // Get all bookings
 export const getAllBookings = async (_req: Request, res: Response): Promise<void> => {
@@ -56,6 +80,7 @@ export const getBookingById = async (req: Request, res: Response): Promise<void>
 };
 
 // Get bookings by user ID
+// Get bookings by user ID
 export const getBookingsByUserId = async (req: Request, res: Response): Promise<void> => {
   const userId = parseInt(req.params.userId);
   if (isNaN(userId)) {
@@ -65,15 +90,19 @@ export const getBookingsByUserId = async (req: Request, res: Response): Promise<
 
   try {
     const bookings = await getBookingsByUserIdService(userId);
+
+    // Return empty array instead of 404 if no bookings found
     if (!bookings?.length) {
-      res.status(404).json({ message: "No bookings found for this user" });
+      res.status(200).json([]); // <-- changed here
       return;
     }
+
     res.status(200).json(bookings);
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to fetch user bookings" });
   }
 };
+
 
 // Get bookings by room ID
 export const getBookingsByRoomId = async (req: Request, res: Response): Promise<void> => {
@@ -125,7 +154,6 @@ export const getBookingsByDateRange = async (req: Request, res: Response): Promi
     return;
   }
 
-  // Basic date format validation
   if (isNaN(Date.parse(startDate as string)) || isNaN(Date.parse(endDate as string))) {
     res.status(400).json({ error: "Invalid date format. Please use ISO format (YYYY-MM-DD)" });
     return;
@@ -133,16 +161,14 @@ export const getBookingsByDateRange = async (req: Request, res: Response): Promi
 
   try {
     const bookings = await getBookingByDateRangeService(startDate as string, endDate as string);
-    if (!bookings?.length) {
-      res.status(404).json({ message: "No bookings found within the specified date range" });
-      return;
-    }
+
+    // ✅ Always return 200 with data (even if empty)
     res.status(200).json(bookings);
-    console.log(bookings)
   } catch (error: any) {
     res.status(500).json({ error: error.message || "Failed to fetch bookings for date range" });
   }
 };
+
 
 // Check room availability
 export const checkRoomAvailability = async (req: Request, res: Response): Promise<void> => {

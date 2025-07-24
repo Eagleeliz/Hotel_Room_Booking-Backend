@@ -7,7 +7,8 @@ export const createRoomValidator = z.object({
   pricePerNight: z.number().positive(), 
   capacity: z.number().int().positive(), 
   amenities: z.string().min(2).trim(), 
-  isAvailable: z.boolean().optional()   
+  isAvailable: z.boolean().optional() , 
+  roomImg:z.string().url().optional()
 });
 
 export const updateRoomValidator = createRoomValidator.extend({

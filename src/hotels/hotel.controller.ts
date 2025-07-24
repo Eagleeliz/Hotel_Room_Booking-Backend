@@ -49,7 +49,7 @@ export const getHotelById = async (req: Request, res: Response) => {
 export const createHotel = async (req: Request, res: Response) => {
   try {
     const validatedData = createHotelValidator.parse(req.body);
-    const { name, location, address, contactPhone, category, rating } = validatedData;
+    const { name, location, address, contactPhone, category, rating,hotelImg } = validatedData;
 
     const result = await createHotelServices({
       name,
@@ -57,7 +57,8 @@ export const createHotel = async (req: Request, res: Response) => {
       address,
       contactPhone,
       category,
-      rating
+      rating,
+      hotelImg
     });
 
     if (!result) {
@@ -81,7 +82,7 @@ export const updateHotel = async (req: Request, res: Response) => {
 
   try {
     const validatedData = updateHotelValidator.parse({ ...req.body, hotelId });
-    const { name, location, address, contactPhone, category, rating } = validatedData;
+    const { name, location, address, contactPhone, category, rating, hotelImg} = validatedData;
 
     const result = await updateHotelServices(hotelId, {
       name,
@@ -89,7 +90,8 @@ export const updateHotel = async (req: Request, res: Response) => {
       address,
       contactPhone,
       category,
-      rating
+      rating,
+      hotelImg
     });
 
     res.status(200).json({ message: "Hotel updated successfully ✅", result });

@@ -50,10 +50,10 @@ export const getAllTicketsService = async () => {
           email: true,
           contactPhone: true,
           address: true,
-          role: true
-        }
-      }
-    }
+          role: true,
+        },
+      },
+    },
   });
 };
 
@@ -71,10 +71,31 @@ export const getTicketByIdService = async (ticketId: number) => {
           email: true,
           contactPhone: true,
           address: true,
-          role: true
-        }
-      }
-    }
+          role: true,
+        },
+      },
+    },
+  });
+};
+
+// =========================
+// Get Tickets by User ID
+// =========================
+export const getTicketsByUserIdService = async (userId: number) => {
+  return await db.query.supportTicketTable.findMany({
+    where: eq(supportTicketTable.userId, userId),
+    with: {
+      user: {
+        columns: {
+          firstName: true,
+          lastName: true,
+          email: true,
+          contactPhone: true,
+          address: true,
+          role: true,
+        },
+      },
+    },
   });
 };
 
@@ -96,10 +117,10 @@ export const getTicketsByStatusService = async (status: string) => {
           email: true,
           contactPhone: true,
           address: true,
-          role: true
-        }
-      }
-    }
+          role: true,
+        },
+      },
+    },
   });
 };
 
@@ -118,10 +139,15 @@ export const updateTicketService = async (
 
   return updated.length > 0;
 };
+
+// =========================
 // Mark ticket as Resolved
-export const resolveTicketService = async (ticketId: number): Promise<string | null> => {
+// =========================
+export const resolveTicketService = async (
+  ticketId: number
+): Promise<string | null> => {
   const ticket = await db.query.supportTicketTable.findFirst({
-    where: eq(supportTicketTable.ticketId, ticketId)
+    where: eq(supportTicketTable.ticketId, ticketId),
   });
 
   if (!ticket) return null;
@@ -150,12 +176,16 @@ export const deleteTicketService = async (ticketId: number) => {
 // =========================
 // Reopen a Resolved Ticket
 // =========================
-export const reopenTicketService = async (ticketId: number, userId: number) => {
+export const reopenTicketService = async (
+  ticketId: number,
+  userId: number
+) => {
   const ticket = await db.query.supportTicketTable.findFirst({
-    where: eq(supportTicketTable.ticketId, ticketId)
+    where: eq(supportTicketTable.ticketId, ticketId),
   });
 
-  if (!ticket || ticket.userId !== userId || ticket.status !== "Resolved") return null;
+  if (!ticket || ticket.userId !== userId || ticket.status !== "Resolved")
+    return null;
 
   const reopened = await db
     .update(supportTicketTable)

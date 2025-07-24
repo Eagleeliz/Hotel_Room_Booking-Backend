@@ -84,7 +84,7 @@ export const getAvailableRooms = async (req: Request, res: Response): Promise<vo
 
 // create a new room
 export const createRoom = async (req: Request, res: Response) => {
-  const { hotelId, roomType, pricePerNight, capacity, amenities, isAvailable } = req.body;
+  const { hotelId, roomType, pricePerNight, capacity, amenities, isAvailable,roomImg } = req.body;
 
   if (!hotelId || !roomType || !pricePerNight || !capacity || !amenities) {
     res.status(400).json({ error: "All fields are required" });
@@ -98,7 +98,8 @@ export const createRoom = async (req: Request, res: Response) => {
       pricePerNight,
       capacity,
       amenities,
-      isAvailable
+      isAvailable,
+      roomImg
     });
 
     res.status(201).json({ message: result });
@@ -116,9 +117,9 @@ export const updateRoom = async (req: Request, res: Response) => {
     return;
   }
 
-  const { hotelId, roomType, pricePerNight, capacity, amenities, isAvailable } = req.body;
+  const { hotelId, roomType, pricePerNight, capacity, amenities, isAvailable,roomImg } = req.body;
 
-  if (!hotelId || !roomType || !pricePerNight || !capacity || !amenities) {
+  if (!hotelId || !roomType || !pricePerNight  || !capacity || !amenities) {
     res.status(400).json({ error: "All fields are required" });
     return;
   }
@@ -130,7 +131,8 @@ export const updateRoom = async (req: Request, res: Response) => {
       pricePerNight,
       capacity,
       amenities,
-      isAvailable
+      isAvailable,
+      roomImg
     });
 
     res.status(200).json({ message });

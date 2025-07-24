@@ -53,7 +53,7 @@ export const authMiddleware = (
       token,
       process.env.JWT_SECRET as string
     );
-
+  console.log("Decoded token in middleware:", decodedToken); 
     if (!decodedToken) {
       res.status(401).json({ error: "Invalid or expired token" });
       return;

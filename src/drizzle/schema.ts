@@ -51,7 +51,8 @@ export const hotelTable = pgTable("hotels", {
   category: varchar("category", { length: 50 }),
   rating: integer("rating"),
   createdAt: timestamp("createdAt").defaultNow(),
-  updatedAt: timestamp("updatedAt").defaultNow()
+  updatedAt: timestamp("updatedAt").defaultNow(),
+  hotelImg:varchar("hotelImg",{ length:255})
 });
 
 // ============================
@@ -68,7 +69,8 @@ export const roomTable = pgTable("rooms", {
   capacity: integer("capacity"),
   amenities: text("amenities"),
   isAvailable: boolean("isAvailable").default(true),
-  createdAt: timestamp("createdAt").defaultNow()
+  createdAt: timestamp("createdAt").defaultNow(),
+    roomImg:varchar("roomImg",{ length:255})
 });
 
 // ============================

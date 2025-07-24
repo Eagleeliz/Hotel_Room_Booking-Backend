@@ -7,7 +7,8 @@ import {
   updateTicketService,
   deleteTicketService,
   reopenTicketService,
-  resolveTicketService
+  resolveTicketService,
+  getTicketsByUserIdService
 } from "../SupportTickets/supportTicket.service";
 import { supportTicketValidator } from "../validation/supportTicket.validator";
 
@@ -129,6 +130,7 @@ export const updateTicket = async (req: Request, res: Response) => {
 
   try {
     const updated = await updateTicketService(ticketId, req.body);
+    console.log(updated)
     if (!updated) {
       res.status(404).json({ message: "Ticket not found or not updated" });
        return
@@ -225,3 +227,58 @@ export const reopenTicket = async (req: Request, res: Response) => {
   }
 
 };
+export const getTicketsByUserId = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId);
+  if (isNaN(userId)) {
+     res.status(400).json({ error: "Invalid user ID" });
+     return
+  }
+
+  try {
+    const tickets = await getTicketsByUserIdService(userId);
+    if (!tickets || tickets.length === 0) {
+       res.status(404).json({ message: "No tickets found for this user" });
+       return
+    }
+
+    res.status(200).json({
+      message: "User's tickets retrieved successfully ✅",
+      tickets
+    });
+     return
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to retrieve user's tickets" });
+     return
+  }
+  
+};
+// ===============================
+// Get Current User's Tickets (Me)
+// ===============================
+export const getMyTickets = async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized: User ID not found" });
+     return
+  }
+
+  try {
+    const tickets = await getTicketsByUserIdService(userId);
+    if (!tickets || tickets.length === 0) {
+     res.status(404).json({ message: "No tickets found for this user" });
+       return
+    }
+
+     res.status(200).json({
+      message: "Your tickets retrieved successfully ✅",
+      tickets,
+    });
+    return
+  } catch (error: any) {
+     res.status(500).json({ error: error.message || "Failed to retrieve your tickets" });
+     return
+  }
+};
+
+

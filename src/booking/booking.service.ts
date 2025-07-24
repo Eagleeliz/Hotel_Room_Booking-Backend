@@ -266,9 +266,24 @@ export const getBookingsByUserIdService = async (userId: number) => {
   return await db.query.bookingTable.findMany({
     where: eq(bookingTable.userId, userId),
     with: {
+      user: {
+        columns: {
+          userId: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          contactPhone: true,
+        }
+      },
       room: {
         with: {
-          hotel: true
+          hotel: {
+            columns: {
+              name: true,
+              location: true,
+              address: true,
+            }
+          }
         }
       },
       payment: true
@@ -276,6 +291,7 @@ export const getBookingsByUserIdService = async (userId: number) => {
     orderBy: (bookingTable, { desc }) => [desc(bookingTable.createdAt)]
   });
 };
+
 
 export const getBookingByDateRangeService = async (startDate: string, endDate: string): Promise<TBookingSelect[] | null> => {
   return await db.query.bookingTable.findMany({
@@ -331,6 +347,22 @@ export const getUpcomingCheckInsService = async (days = 7) => {
     orderBy: (bookingTable, { asc }) => [asc(bookingTable.checkInDate)]
   });
 };
+
+
+
+export const updateBookingStatusToConfirmedService = async (
+  bookingId: number
+): Promise<TBookingSelect | undefined> => {
+  const [updatedBooking] = await db
+    .update(bookingTable)
+    .set({ bookingStatus: "Confirmed", updatedAt: new Date() })
+    .where(eq(bookingTable.bookingId, bookingId))
+    .returning();
+
+  return updatedBooking;
+};
+
+
 
 export const getUpcomingCheckOutsService = async (days = 7) => {
   const today = new Date();

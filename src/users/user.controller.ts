@@ -39,6 +39,70 @@ export const getUserById = async (req: Request, res: Response) => {
         res.status(500).json({ error:error.message || "Failed to fetch user" });
     }
 }
+
+//getuserme
+
+
+export const getMyProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId; // ✅ comes from your authMiddleware
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return 
+    }
+
+    const user = await getUserByIdServices(userId);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return 
+    }
+
+    const { password, ...userWithoutPassword } = user;
+res.status(200).json(userWithoutPassword);
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//update my profile
+export const updateMyProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { firstName, lastName, email, password, contactPhone, address } = req.body;
+
+    // Only include fields that are provided in the request
+    const updatedFields: any = {};
+    if (firstName) updatedFields.firstName = firstName;
+    if (lastName) updatedFields.lastName = lastName;
+    if (email) updatedFields.email = email;
+    if (password) updatedFields.password = password;
+    if (contactPhone) updatedFields.contactPhone = contactPhone;
+    if (address) updatedFields.address = address;
+
+    if (Object.keys(updatedFields).length === 0) {
+      res.status(400).json({ message: "No fields provided to update." });
+      return;
+    }
+
+    const updatedMessage = await updateUserServices(userId, updatedFields);
+
+    res.status(200).json({ message: updatedMessage });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message || "Update failed" });
+  }
+};
+
+
+
 //create a new user
 export const createUser = async (req: Request, res: Response) => {
     const { firstName, lastName, email, password, contactPhone, address } = req.body;
@@ -72,7 +136,7 @@ export const createUser = async (req: Request, res: Response) => {
     }
 };
 
-//updare user
+//update user
 export const updateUser = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
