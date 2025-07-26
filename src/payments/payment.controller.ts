@@ -32,6 +32,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
      res.status(400).json({ error: "Invalid payment amount" });
      return
   }
+  console.log(bookingId)
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -85,13 +86,18 @@ export const handleStripeWebhook = async (req: Request, res: Response) => {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const bookingId = session.metadata?.bookingId;
+    const transactionId = session.payment_intent as string;
+
 
     if (bookingId) {
       try {
+        console.log(bookingId)
         await createHotelPaymentService({
           amount: ((session.amount_total || 0) / 100).toString(), // store in dollars
           paymentStatus: "Completed",
+          paymentMethod: "Card",
           bookingId: parseInt(bookingId),
+          transactionId: transactionId
         });
 
         await updateBookingStatusToConfirmedService(parseInt(bookingId));
@@ -118,6 +124,7 @@ export const getAllPayments = async (req: Request, res: Response) => {
   }
 };
 
+
 // ✅ Get payment by ID
 export const getPaymentById = async (req: Request, res: Response) => {
   const paymentId = parseInt(req.params.paymentId);
@@ -141,11 +148,17 @@ export const getPaymentsByUserId = async (req: Request, res: Response) => {
 
   try {
     const result = await getHotelPaymentsByUserIdService(userId, page, pageSize);
+
+    // 🔍 Log the result for debugging
+    console.log("📦 Booking + Payment Data:", JSON.stringify(result, null, 2));
+
     res.json(result);
   } catch (error) {
+    console.error("❌ Error fetching user payments:", error);
     res.status(500).json({ message: "Error fetching user payments", error });
   }
 };
+
 
 // ✅ Delete payment by ID
 export const deletePayment = async (req: Request, res: Response) => {

@@ -33,12 +33,16 @@ export const getAllHotelPaymentsService = async (
   page: number,
   pageSize: number
 ): Promise<TPaymentSelect[] | null> => {
-  const list = await db.query.paymentTable.findMany({
+  const list = await db.query.paymentTable.findMany( {
     with: {
       booking: {
         with: {
           user: { columns: { password: false } },
-          room: true,
+          room: {
+            with: {
+              hotel: true, // ✅ This line is crucial
+            },
+          },
         },
       },
     },
@@ -49,6 +53,7 @@ export const getAllHotelPaymentsService = async (
 
   return list;
 };
+
 
 // ✅ Get a single payment by ID
 export const getHotelPaymentByIdService = async (
@@ -68,23 +73,36 @@ export const getHotelPaymentByIdService = async (
 };
 
 // ✅ Get all payments for a specific user
+// services/paymentService.ts or similar
 export const getHotelPaymentsByUserIdService = async (
   userId: number,
   page: number,
   pageSize: number
 ): Promise<TBookingSelect[] | null> => {
-  return await db.query.bookingTable.findMany({
+  const bookingsWithPayments = await db.query.bookingTable.findMany({
     where: eq(bookingTable.userId, userId),
     with: {
-      payment: true, // ✅ correct singular relation from your schema
-      user: { columns: { password: false } },
-      room: true,
+      payment: true,
+      user: {
+        columns: {
+          password: false,
+        },
+      },
+      room: {
+        with: {
+          hotel: true, // ✅ include the hotel related to the room
+        },
+      },
     },
     orderBy: desc(bookingTable.bookingId),
     offset: (page - 1) * pageSize,
     limit: pageSize,
   });
+
+  return bookingsWithPayments;
 };
+
+
 
 // ✅ Delete payment by ID
 export const deleteHotelPaymentService = async (

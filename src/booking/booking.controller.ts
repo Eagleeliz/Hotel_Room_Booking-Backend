@@ -232,7 +232,7 @@ export const createNewBooking = async (req: Request, res: Response): Promise<voi
 
   try {
     const booking = await createNewBookingService(bookingData);
-
+     console.log(booking)
     res.status(201).json({
       message: "Booking created successfully 🎉",
       booking

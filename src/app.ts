@@ -14,12 +14,11 @@ import { handleStripeWebhook } from './payments/payment.controller'; // ✅ IMPO
 dotenv.config();
 
 const app: Application = express();
-
+// ✅ Add Stripe Webhook Route FIRST (with raw body parsing)
+app.post('/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 // Basic Middleware
 app.use(cors());
 
-// ✅ Add Stripe Webhook Route FIRST (with raw body parsing)
-app.post('/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 // ✅ THEN add normal parsers
 app.use(express.json());
