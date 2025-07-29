@@ -65,7 +65,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
   }
 };
 
-// ✅ Stripe Webhook to confirm payment and update booking
+//  Stripe Webhook to confirm payment and update booking
 export const handleStripeWebhook = async (req: Request, res: Response) => {
   const sig = req.headers["stripe-signature"];
   let event;

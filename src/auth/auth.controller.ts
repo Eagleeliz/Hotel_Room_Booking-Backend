@@ -44,7 +44,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         user.email,
         fullName,
         "Account Created Successfully 🌟",
-        "Welcome to our Food Services!"
+        "Welcome to Golden Home services,where hospitality meets heritage!"
       );
     } catch (emailError: any) {
       console.error("Email send failed:", emailError.message);
