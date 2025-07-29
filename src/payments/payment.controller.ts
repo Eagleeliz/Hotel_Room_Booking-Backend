@@ -6,6 +6,7 @@ import {
   getAllHotelPaymentsService,
   getHotelPaymentByIdService,
   getHotelPaymentsByUserIdService,
+  updateHotelPaymentStatusService,
 } from "../payments/payment.service";
 import { updateBookingStatusToConfirmedService } from "../booking/booking.service";
 
@@ -171,3 +172,21 @@ export const deletePayment = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to delete payment", error });
   }
 };
+// update using the payment id
+export const updatePaymentStatus = async (req: Request, res: Response) => {
+  const paymentId = parseInt(req.body.paymentId);
+  const status = req.body.status;
+
+  if (!paymentId || !["Pending", "Completed", "Failed"].includes(status)) {
+     res.status(400).json({ message: "Invalid payment ID or status" });
+     return
+  }
+
+  try {
+    const result = await updateHotelPaymentStatusService(paymentId, status);
+    res.status(200).json({ message: "Payment status updated", result });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating payment status", error });
+  }
+};
+

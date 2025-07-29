@@ -6,12 +6,16 @@ import {
   getPaymentById,
   getPaymentsByUserId,
   createCheckoutSession,
-  handleStripeWebhook
+  handleStripeWebhook,
+  updatePaymentStatus // ✅ Make sure this is imported
 } from "./payment.controller";
 
 import { pagination } from "../middleware/pagination";
 
 const paymentRouter = Router();
+// ✅ PATCH route for updating payment status
+paymentRouter.patch("/payments/status", updatePaymentStatus); 
+
 
 // 🔍 Get all payments with pagination
 paymentRouter.get("/payments", pagination, getAllPayments);
@@ -33,5 +37,7 @@ paymentRouter.post("/payments/create-checkout-session", createCheckoutSession);
 
 // 🪝 Stripe webhook handler
 paymentRouter.post("/payments/webhook", handleStripeWebhook);
+
+
 
 export default paymentRouter;

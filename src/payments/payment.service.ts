@@ -111,3 +111,15 @@ export const deleteHotelPaymentService = async (
   await db.delete(paymentTable).where(eq(paymentTable.paymentId, paymentId));
   return "Payment deleted successfully";
 };
+
+//update status by paymentId
+export const updateHotelPaymentStatusService = async (
+  paymentId: number,
+  status: "Pending" | "Completed" | "Failed"
+) => {
+  return db
+    .update(paymentTable)
+    .set({ paymentStatus: status }) // ✅ Type-safe now
+    .where(eq(paymentTable.paymentId, paymentId))
+    .returning();
+};
